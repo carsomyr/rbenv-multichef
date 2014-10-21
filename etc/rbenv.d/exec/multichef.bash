@@ -13,3 +13,27 @@
 # the License.
 
 # The plugin delegate for `rbenv exec`.
+
+source -- "$(dirname -- "$(dirname -- "${BASH_SOURCE[0]}")")/multichef/includes.sh"
+
+if { config_dir=$(multichef_config_dir "$(pwd)"); }; then
+    case "$RBENV_COMMAND" in
+        chef-client)
+            config_file="${config_dir}/client.rb"
+
+            if [[ -f "$config_file" ]]; then
+                # Run `chef-client` with the configuration file prepended to the command-line arguments.
+                shift -- 1
+                set -- "-" "-c" "$config_file" "$@"
+            else
+                echo "rbenv-multichef: running without an implicit \`client.rb\` file, which wasn't found in"\
+" \`$(absolute_path "$config_dir")\`" >&2
+            fi
+            ;;
+
+        knife)
+            # Export the `KNIFE_HOME` environment variable for `knife` to pick up later.
+            export -- KNIFE_HOME=$config_dir
+            ;;
+    esac
+fi

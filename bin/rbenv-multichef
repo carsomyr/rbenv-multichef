@@ -17,3 +17,42 @@
 # A script for interacting with the plugin.
 
 set -e
+
+# The script may be a symlink created by Homebrew.
+script_path=$(readlink -- "$0" || true)
+
+if [[ -z "$script_path" ]]; then
+    script_path=$0
+else
+    # Is it a (relative) symlink? Change to its parent directory.
+    script_path="$(cd -- $(dirname -- "$0") && cd -- "$(dirname -- "$script_path")" && pwd)"\
+"/$(basename -- "$script_path")"
+fi
+
+source -- "$(dirname -- "$(dirname -- "$script_path")")/etc/rbenv.d/multichef/includes.sh"
+
+case "$1" in
+    local|global)
+        if { ! config_dir=$(absolute_path "${RBENV_MULTICHEF_ROOT}/configs/${2}"); }; then
+            exit -- 1
+        fi
+
+        if [[ ! -d "$config_dir" ]]; then
+            echo "rbenv-multichef: the config directory \`${config_dir}\` doesn't exist" >&2
+            exit -- 1
+        fi
+
+        if [[ "$1" == "local" ]]; then
+            echo "$2" > "$(pwd)/.multichef-config"
+        else
+            echo "$2" > "${RBENV_MULTICHEF_ROOT}/config"
+        fi
+        ;;
+
+    *)
+        cat >&2 <<EOF
+usage: rbenv multichef [local | global] <config name>
+EOF
+        exit -- 1
+        ;;
+esac
