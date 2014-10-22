@@ -49,9 +49,29 @@ case "$1" in
         fi
         ;;
 
+    link)
+        config_name=$2
+
+        if { ! config_dir=$(absolute_path "$3"); }; then
+            exit -- 1
+        fi
+
+        if [[ -z "$config_name" ]]; then
+            echo "rbenv-multichef: please provide a config name" >&2
+            exit -- 1
+        fi
+
+        if [[ ! -d "${RBENV_MULTICHEF_ROOT}/configs" ]]; then
+            mkdir -p -- "${RBENV_MULTICHEF_ROOT}/configs"
+        fi
+
+        ln -sfn -- "$config_dir" "${RBENV_MULTICHEF_ROOT}/configs/${config_name}"
+        ;;
+
     *)
         cat >&2 <<EOF
 usage: rbenv multichef [local | global] <config name>
+   or: rbenv multichef link <config dir> <config name>
 EOF
         exit -- 1
         ;;
