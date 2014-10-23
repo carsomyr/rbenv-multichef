@@ -68,10 +68,33 @@ case "$1" in
         ln -sfn -- "$config_dir" "${RBENV_MULTICHEF_ROOT}/configs/${config_name}"
         ;;
 
+    config)
+        if { config_file=$(multichef_config_file "$(pwd)"); }; then
+            config_name=$(cat -- "$config_file")
+            config_dir="${RBENV_MULTICHEF_ROOT}/configs/${config_name}"
+        else
+            config_file="${RBENV_MULTICHEF_ROOT}/config"
+            config_name="system"
+            config_dir=""
+        fi
+
+        message="$config_name"
+        message="${message} (set by \`${config_file}\`"
+
+        if [[ -n "$config_dir" ]]; then
+            message="${message}, using \`$(absolute_path "$config_dir")\`"
+        fi
+
+        message="${message})"
+
+        echo "$message"
+        ;;
+
     *)
         cat >&2 <<EOF
 usage: rbenv multichef [local | global] <config name>
    or: rbenv multichef link <config dir> <config name>
+   or: rbenv multichef config
 EOF
         exit -- 1
         ;;
