@@ -31,6 +31,10 @@ fi
 
 source -- "$(dirname -- "$(dirname -- "$script_path")")/etc/rbenv.d/multichef/includes.sh"
 
+# Magic comment to enable completions:
+#
+# provide rbenv completions
+
 case "$1" in
     local|global)
         if { ! config_dir=$(absolute_path "${RBENV_MULTICHEF_ROOT}/configs/${2}"); }; then
@@ -88,6 +92,25 @@ case "$1" in
         message="${message})"
 
         echo "$message"
+        ;;
+
+    --complete)
+        shift -- 1
+
+        case "$1" in
+            local|global)
+                ls -- "${RBENV_MULTICHEF_ROOT}/configs/${config_name}"
+                ;;
+
+            "")
+                cat <<EOF
+local
+global
+link
+config
+EOF
+                ;;
+        esac
         ;;
 
     *)
