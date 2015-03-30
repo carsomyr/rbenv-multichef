@@ -88,6 +88,15 @@ function absolute_path {
     echo "$resolved"
 }
 
+# Prints a usage message to stderr.
+function usage_message {
+    cat >&2 <<EOF
+usage: rbenv multichef [local | global] <config name>
+   or: rbenv multichef link <config dir> <config name>
+   or: rbenv multichef config
+EOF
+}
+
 if [[ -z "$RBENV_MULTICHEF_ROOT" ]]; then
     export -- RBENV_MULTICHEF_ROOT="${HOME}/.chef/multichef"
 fi
