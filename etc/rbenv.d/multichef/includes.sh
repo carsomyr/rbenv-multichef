@@ -92,7 +92,7 @@ function absolute_path {
 function usage_message {
     cat >&2 <<EOF
 usage: rbenv multichef [local | global] <config name>
-   or: rbenv multichef link <config dir> <config name>
+   or: rbenv multichef link <config name> <config dir>
    or: rbenv multichef config
 EOF
 }
