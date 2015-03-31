@@ -88,6 +88,23 @@ function absolute_path {
     echo "$resolved"
 }
 
+# Prints a line with the config in effect, the file setting it, and the associated directory.
+function config_message {
+    local -- config_name=$1
+    local -- config_file=$2
+    local -- config_dir=$3
+
+    message="${config_name} (set by \`${config_file}\`"
+
+    if [[ -n "$config_dir" ]]; then
+        message="${message}, using \`$(absolute_path "$config_dir")\`"
+    fi
+
+    message="${message})"
+
+    echo "$message"
+}
+
 # Prints a usage message to stderr.
 function usage_message {
     cat >&2 <<EOF

@@ -85,7 +85,7 @@ case "$1" in
         ln -sfn -- "$config_dir" "${RBENV_MULTICHEF_ROOT}/configs/${config_name}"
         ;;
 
-    config)
+    config|configs)
         if (( $# != 1 )); then
             usage_message;
             exit -- 1
@@ -100,16 +100,20 @@ case "$1" in
             config_dir=""
         fi
 
-        message="$config_name"
-        message="${message} (set by \`${config_file}\`"
-
-        if [[ -n "$config_dir" ]]; then
-            message="${message}, using \`$(absolute_path "$config_dir")\`"
+        if [[ "$1" == "config" ]]; then
+            configs=("$config_name")
+        else
+            IFS=$'\n' declare -a -- "configs=(\$(ls -- \"\${RBENV_MULTICHEF_ROOT}/configs\"))"
+            configs=("system" "${configs[@]}")
         fi
 
-        message="${message})"
-
-        echo "$message"
+        for config in "${configs[@]}"; do
+            if [[ "$config" != "$config_name" ]]; then
+                echo "$config"
+            else
+                config_message "$config_name" "$config_file" "$config_dir"
+            fi
+        done
         ;;
 
     --complete)
